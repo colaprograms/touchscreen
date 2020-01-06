@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Exec=/bin/bash /home/pi/Downloads/touchscreen/run.sh
+Name=Random book
+GenericName=Random book
+Comment=Random book kiosk display
+Icon=/usr/share/pixmaps/python.xpm
+StartupNotify=true
+Terminal=true

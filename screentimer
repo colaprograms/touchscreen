@@ -1,0 +1,94 @@
+#!/usr/bin/python3
+
+import sys, os, time, datetime
+
+OPENING = 10 # open at 10 am
+CLOSING = 18 # close at 6 pm
+
+def test_open(t):
+    return t.weekday() in [0, 1, 2, 3, 4] and OPENING <= t.hour < CLOSING
+
+def next_open(t):
+    if t.weekday() in [0, 1, 2, 3, 4]:
+        if t.hour < OPENING:
+            increment = 0
+        elif t.hour < CLOSING:
+            return None # currently open
+        else: 
+            if t.weekday() == 4:
+                increment = 3 # friday, so we have to wait 3 days
+            else:
+                increment = 1
+    else:
+        if t.weekday() == 5:
+            increment = 2
+        elif t.weekday() == 6:
+            increment = 1
+    return (t + datetime.timedelta(days=increment)).replace(
+        hour=OPENING, minute=0, second=0, microsecond=0)
+
+def next_close(t):
+    if t.weekday() in [0, 1, 2, 3, 4]:
+        if OPENING <= t.hour < CLOSING:
+            return t.replace(hour=CLOSING, minute=0, second=0, microsecond=0)
+    return None
+
+def slow_test(t, openclosed):
+    if test_open(t) == openclosed:
+        return None
+    t += datetime.timedelta(minutes=59, seconds=59, microseconds=999999)
+    t = t.replace(minute=0, second=0, microsecond=0)
+    while True:
+        if test_open(t) == openclosed:
+            return t
+        t += datetime.timedelta(hours=1)
+
+def test():
+    t = datetime.datetime.today()
+    t = t.replace(hour=0, minute=0, second=0, microsecond=0)
+    for i in range(1000):
+        next_open_1 = next_open(t)
+        next_open_2 = slow_test(t, True)
+        next_closed_1 = next_close(t)
+        next_closed_2 = slow_test(t, False)
+        assert next_open_1 == next_open_2
+        assert next_closed_1 == next_closed_2
+        t += datetime.timedelta(minutes=30)
+
+def wait_for(t):
+    while True:
+        s = (t - datetime.datetime.today()).total_seconds()
+        if s <= 0:
+            return
+        if s < 0.1:
+            s = 0.1
+        if s > 60:
+            s *= 0.99
+        time.sleep(s)
+
+def SCREENOFF():
+    os.system("/usr/bin/xset +dpms")
+    os.system("/usr/bin/xset dpms force off")
+
+def SCREENON():
+    os.system("/usr/bin/xset -dpms")
+
+if __name__ == "__main__":
+    today = datetime.datetime.today
+    def OFF():
+        o = next_open(today())
+        if o is None:
+            return
+        SCREENOFF()
+        print("Screen off until %s" % o)
+        wait_for(o)
+    def ON():
+        clo = next_close(today())
+        if clo is None:
+            return
+        SCREENON()
+        print("Screen on until %s" % clo)
+        wait_for(clo)
+    while True:
+        OFF()
+        ON()

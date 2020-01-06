@@ -1,0 +1,140 @@
+body {
+  font-size: 200%;
+  background-color: #000;
+  color: #CCC;
+  font-family: "Swiss 911 Ultra Condensed";
+}
+
+@font-face {
+  font-family: "Swiss 911 Ultra Condensed";
+  src: url("/fonts/swiss-911.woff2") format("woff2");
+}
+
+/* prevent the user from selecting text
+ * (usually not what you want for a kiosk) */
+
+* {
+  -webkit-user-select: none;
+}
+
+#nav {
+  height: 100%;
+  width: 224px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 0px 0px 40px 0px;
+  display: grid;
+  grid-template-columns: 160px 26px 49px;
+  grid-template-rows: min-content auto;
+}
+
+#lcarslist.highlight {
+  background-color: #844;
+}
+
+#navheader {
+  grid-column: 1 / span 3;
+  padding: 40px 40px 40px 40px;
+  margin-bottom: 30px;
+  background-color: #422;
+  font-size: 200%;
+  border-radius: 0% 25% 0% 0%;
+}
+
+#navheader.navheaderload {
+  animation: navheaderblink 1s linear 0s infinite;
+}
+
+@keyframes navheaderblink {
+  0% { background-color: #844; }
+  49% { background-color: #844; }
+  50% { background-color: #633; }
+  100% { background-color: #633; }
+}
+
+.lcarscurren {
+  color: #EEE;
+}
+
+#lcarslist {
+  grid-column: 1 / span 1;
+  background-color: #422;
+  padding: 20px 20px 20px 20px;
+  font-size: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+#lcarslist.highlight {
+  background-color: #844;
+}
+
+#lcarslogo {
+  grid-column: 3 / span 1;
+  background-color: #422;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+#lcarstext {
+  font-size: 90%;
+  writing-mode: vertical-rl;
+  padding: 0.8em 0.26em 0.8em 0.30em;
+  border-top: 24px double black;
+}
+
+#lcarstexu {
+  height: 100%;
+  width: 100%;
+  padding: 0.8em 0.2em 0em 0.2em;
+  border-top: 6px solid black;
+}
+
+#body {
+  margin-left: 242px;
+  padding: 40px;
+}
+
+#fields {
+  display: grid;
+  grid-template-columns: 18% 1% auto;
+}
+
+.fieldspac {
+  grid-column: 1 / span 3;
+  height: 12px;
+}
+
+.fielddata {
+  grid-column: 3 / span 1;
+}
+
+.fieldname {
+  grid-column: 1 / span 1;
+}
+
+#bodydraw {
+  width: 100%;
+  height: 100%;
+}
+
+::-webkit-scrollbar
+{
+    width: 48px;
+    height: 48px;
+}
+
+::-webkit-scrollbar-track
+{
+    background-color: #000;
+}
+
+::-webkit-scrollbar-thumb
+{
+    background-color: #422;
+    border: 16px solid black;
+}

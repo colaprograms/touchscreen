@@ -1,0 +1,70 @@
+#!/usr/bin/python3
+
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from record import getrec
+import re
+import json
+
+FILE_NOT_FOUND_MESSAGE = b"File not found"
+
+INDEXTXT = """<!doctype html>
+          <html>
+            <head>
+              <title>random book server</title>
+            </head>
+            <body>
+              This is a server for pulling random books from the Concordia Library website.
+              <br />
+              <br />
+              /getrecord returns JSON
+            </body>
+          </html>
+        """
+
+def endswith(path, suffix):
+  return path[-len(suffix):] == suffix
+
+class Handler(BaseHTTPRequestHandler):
+  def do_GET(self):
+    assert self.path[0] == "/"
+    path = self.path[1:]
+    if path == "":
+      path = "index.html"
+    FILENAME = r'(?!\.)[-a-zA-Z0-9.,]+';
+    REGEX = "^" + FILENAME + "(?:/+" + FILENAME + ")*/*$"
+    match = re.match(REGEX, path)
+    if match:
+      if path == "getrecord":
+        buf = json.dumps( getrec() )
+        type = "application/json"
+      else:
+        try:
+          f = open(path, "rb")
+          buf = f.read()
+          f.close()
+          if endswith(path, ".js"):
+            type = "text/javascript"
+          elif endswith(path, ".css"):
+            type = "text/css"
+          elif endswith(path, ".ttf"):
+            type = "font/ttf"
+          else:
+            type = "text/html"
+        except FileNotFoundError:
+          self.send_response(404)
+          self.end_headers()
+          self.wfile.write(FILE_NOT_FOUND_MESSAGE)
+          buf = None
+      if buf is not None:
+        if isinstance(buf, str):
+          buf = buf.encode()
+        self.send_response(200)
+        self.send_header("Content-type", type)
+        self.send_header("Content-length", len(buf))
+        self.end_headers()
+        self.wfile.write(buf)
+    print(self.path)
+
+httpd = HTTPServer(('localhost', 9000), Handler)
+#httpd = HTTPServer(('', 9000), Handler)
+httpd.serve_forever()
